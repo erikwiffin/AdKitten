@@ -1,6 +1,6 @@
 {
 	"name": "AdKitten",
-	"version": "1.0",
+	"version": "1.1",
 	"description": "Replace ads with kittens!",
 	"permissions": ["webRequest", "webRequestBlocking", "tabs",
 					"<all_urls>"],
@@ -16,6 +16,7 @@
 		"32": "icon-32.jpg",
 		"128": "icon-128.jpg"
 	},
+	"update_url": "http://www.erik.wiffin.com/AdKittens/updates.xml",
 
 	"manifest_version": 2
 }

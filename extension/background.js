@@ -37,18 +37,29 @@ chrome.tabs.onUpdated.addListener(function(tabId) {
 chrome.webRequest.onBeforeRequest.addListener(
 	function(info) {
 		var ad, redirectUrl, offset,
-			regex = /.*(728|468|336|300|250|200|160|120)x(600|280|250|200|100|90|60)*/;
+			regexA = /.*(728|468|336|300|250|200|160|120)x(600|280|250|200|100|90|60).*/,
+			regexB = /wi.(728|468|336|300|250|200|160|120).*hi.(600|280|250|200|100|90|60).*/;
 		if (disableAdKittens) {
 			return {};
 		}
-		if (ad = info.url.match(regex)) {
-			offset = 1 + Math.random();
+		if (ad = info.url.match(regexA)) {
+			offset = (10 * Math.random()).toFixed();
 			redirectUrl = ["http://placekitten.com/",
-				(ad[1] * offset).toFixed(),
+				(parseInt(ad[1]) + parseInt(offset)),
 				"/",
-				(ad[2] * offset).toFixed()
+				(parseInt(ad[2]) + parseInt(offset))
 				].join('');
 			// Redirect the request to a placekitten url
+			return {redirectUrl: redirectUrl};
+		}
+		if (ad = info.url.match(regexB)) {
+			offset = (10 * Math.random()).toFixed();
+			redirectUrl = ["http://placekitten.com/",
+				(parseInt(ad[1]) + parseInt(offset)),
+				"/",
+				(parseInt(ad[2]) + parseInt(offset))
+				].join('');
+			// Redirect the response to a placekitten url
 			return {redirectUrl: redirectUrl};
 		}
 		return {};
@@ -58,7 +69,7 @@ chrome.webRequest.onBeforeRequest.addListener(
 		urls: [
 			"<all_urls>",
 		],
-		types: ["sub_frame"]
+		types: ["sub_frame", "object"]
 	},
 	// extraInfoSpec
 	["blocking"]);

@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
+<app appid='koalboahkdiamfmibdhgjfmgdecclnpa'>
+<updatecheck codebase='http://www.erik.wiffin.com/AdKittens/extension.crx' version='1.1' />
+</app>
+</gupdate>
