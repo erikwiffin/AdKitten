@@ -1,6 +1,6 @@
 var lastTabId = 0,
 	disableAdKittens = 0,
-	showIcon;
+	showIcon, getRedirect;
 
 chrome.pageAction.onClicked.addListener(function(tab) {
 	disableAdKittens = !disableAdKittens;
@@ -34,33 +34,41 @@ chrome.tabs.onUpdated.addListener(function(tabId) {
 	showIcon();
 });
 
+getRedirect = function(width, height) {
+	var redirectUrl;
+	redirectUrl = ["http://placekitten.com/",
+						(parseInt(width) + parseInt(Math.random() * 10)),
+						"/",
+						(parseInt(height) + parseInt(Math.random() * 10))
+					].join('');
+	// Redirect the request to a placekitten url
+	return {redirectUrl: redirectUrl};
+};
+
 chrome.webRequest.onBeforeRequest.addListener(
 	function(info) {
-		var ad, redirectUrl, offset,
+		var ad, adA, adB,
 			regexA = /.*(728|468|336|300|250|200|160|120)x(600|280|250|200|100|90|60).*/,
-			regexB = /wi.(728|468|336|300|250|200|160|120).*hi.(600|280|250|200|100|90|60).*/;
+			regexB = /wi?.(728|468|336|300|250|200|160|120).*hi?.(600|280|250|200|100|90|60)/,
+			regexCA = /w=(728|468|336|300|250|200|160|120)/,
+			regexCB = /h=(600|280|250|200|100|90|60)/,
+			regexD = /size=(728|468|336|300|250|200|160|120)(600|280|250|200|100|90|60)/;
 		if (disableAdKittens) {
 			return {};
 		}
 		if (ad = info.url.match(regexA)) {
-			offset = (10 * Math.random()).toFixed();
-			redirectUrl = ["http://placekitten.com/",
-				(parseInt(ad[1]) + parseInt(offset)),
-				"/",
-				(parseInt(ad[2]) + parseInt(offset))
-				].join('');
-			// Redirect the request to a placekitten url
-			return {redirectUrl: redirectUrl};
+			return getRedirect(ad[1], ad[2]);
 		}
 		if (ad = info.url.match(regexB)) {
-			offset = (10 * Math.random()).toFixed();
-			redirectUrl = ["http://placekitten.com/",
-				(parseInt(ad[1]) + parseInt(offset)),
-				"/",
-				(parseInt(ad[2]) + parseInt(offset))
-				].join('');
-			// Redirect the response to a placekitten url
-			return {redirectUrl: redirectUrl};
+			return getRedirect(ad[1], ad[2]);
+		}
+		if ((adA = info.url.match(regexCA))
+			&& (adB = info.url.match(regexCB)))
+		{
+			return getRedirect(adA[1], adB[1]);
+		}
+		if (ad = info.url.match(regexD)) {
+			return getRedirect(ad[1], ad[2]);
 		}
 		return {};
 	},
